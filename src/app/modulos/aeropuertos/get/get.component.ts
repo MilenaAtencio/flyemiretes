@@ -1,4 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { AeropuertoService } from 'src/app/servicios/aeropuerto.service';
+import { UsuarioModelo } from 'src/app/modelos/usuario.model';
+import { UsuarioService } from 'src/app/servicios/usuario.service';
+import Swal from 'sweetalert2'
+import { AeropuertoModelo } from 'src/app/modelos/aeropuerto.model';
+
+
 
 @Component({
   selector: 'app-get',
@@ -7,9 +14,35 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GetComponent implements OnInit {
 
-  constructor() { }
+  constructor(private aeropuertoService: AeropuertoService
+    ) { }
+    listado: AeropuertoModelo[] = []
 
+    getAll(){
+      this.aeropuertoService.getAll().subscribe((data: AeropuertoModelo[]) => {
+        this.listado = data
+        console.log(data)
+      })
+    }
+   
+    delete(id?: any){
+      console.log(id)
+      Swal.fire({
+        title: '¿Esta seguro de eliminar este registro?',
+        showCancelButton: true,
+        confirmButtonText: 'Aceptar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.aeropuertoService.delete(id).subscribe((data: any) => {
+            Swal.fire('¡Eliminado correctamente!', '', 'success')
+            this.getAll();
+          })
+        }
+      })
+    }
+  
   ngOnInit(): void {
+    this.getAll()
   }
 
 }
